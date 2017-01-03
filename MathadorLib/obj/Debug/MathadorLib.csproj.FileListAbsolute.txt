@@ -1,0 +1,5 @@
+C:\VisualStudioProjects\CoursDotNet\Mathador\MathadorLib\bin\Debug\MathadorLib.dll
+C:\VisualStudioProjects\CoursDotNet\Mathador\MathadorLib\bin\Debug\MathadorLib.pdb
+C:\VisualStudioProjects\CoursDotNet\Mathador\MathadorLib\obj\Debug\MathadorLib.csprojResolveAssemblyReference.cache
+C:\VisualStudioProjects\CoursDotNet\Mathador\MathadorLib\obj\Debug\MathadorLib.dll
+C:\VisualStudioProjects\CoursDotNet\Mathador\MathadorLib\obj\Debug\MathadorLib.pdb

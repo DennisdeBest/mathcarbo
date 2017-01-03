@@ -1,0 +1,11 @@
+C:\VisualStudioProjects\CoursDotNet\Mathador\Mathador\bin\Debug\Mathador.exe.config
+C:\VisualStudioProjects\CoursDotNet\Mathador\Mathador\bin\Debug\Mathador.exe
+C:\VisualStudioProjects\CoursDotNet\Mathador\Mathador\bin\Debug\Mathador.pdb
+C:\VisualStudioProjects\CoursDotNet\Mathador\Mathador\bin\Debug\MathadorLib.dll
+C:\VisualStudioProjects\CoursDotNet\Mathador\Mathador\bin\Debug\MathadorLib.pdb
+C:\VisualStudioProjects\CoursDotNet\Mathador\Mathador\obj\Debug\Mathador.csprojResolveAssemblyReference.cache
+C:\VisualStudioProjects\CoursDotNet\Mathador\Mathador\obj\Debug\Mathador.exe
+C:\VisualStudioProjects\CoursDotNet\Mathador\Mathador\obj\Debug\Mathador.pdb
+C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\Mathador.exe.config
+C:\VisualStudioProjects\mathcarbo\Mathador\obj\Debug\Mathador.exe
+C:\VisualStudioProjects\mathcarbo\Mathador\obj\Debug\Mathador.pdb
