@@ -3,3 +3,8 @@ C:\VisualStudioProjects\CoursDotNet\Mathador\MathadorLib\bin\Debug\MathadorLib.p
 C:\VisualStudioProjects\CoursDotNet\Mathador\MathadorLib\obj\Debug\MathadorLib.csprojResolveAssemblyReference.cache
 C:\VisualStudioProjects\CoursDotNet\Mathador\MathadorLib\obj\Debug\MathadorLib.dll
 C:\VisualStudioProjects\CoursDotNet\Mathador\MathadorLib\obj\Debug\MathadorLib.pdb
+C:\VisualStudioProjects\mathcarbo\MathadorLib\bin\Debug\MathadorLib.dll
+C:\VisualStudioProjects\mathcarbo\MathadorLib\bin\Debug\MathadorLib.pdb
+C:\VisualStudioProjects\mathcarbo\MathadorLib\obj\Debug\MathadorLib.csprojResolveAssemblyReference.cache
+C:\VisualStudioProjects\mathcarbo\MathadorLib\obj\Debug\MathadorLib.dll
+C:\VisualStudioProjects\mathcarbo\MathadorLib\obj\Debug\MathadorLib.pdb
