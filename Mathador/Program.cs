@@ -1,7 +1,9 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Linq;
+using System.Media;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,8 +15,13 @@ namespace Mathador
     {
         static void Main(string[] args)
         {
+            //Create the database if it does not exist
+            SQLiteConnection.CreateFile("mathcarbo.sqlite");
             //Solve();
-            Generate();
+            //Generate random lists of ints and the results
+            List<List<int>> generatorResults = Generate();
+            Game game = new Game(generatorResults);
+
         }
         private static void Solve()
         {
@@ -22,11 +29,13 @@ namespace Mathador
             Solver solver = new Solver(list, 2536);
         }
 
-        private static void Generate()
+        private static List<List<int>> Generate()
         {
             Generator generator = new Generator();
-            string path = @"C:\VisualStudioProjects\CoursDotNet\data\generator.txt";
+            string path = "generator.txt";
             generator.GenerateRandomLists(100, path);
+            //return generator.ReadFromDB();
+            return generator.ReadFromFile(path);
         }
     }
 }

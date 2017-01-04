@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -14,9 +15,17 @@ namespace MathadorLib
         readonly Random _random = new Random();
         private List<int> _output = new List<int>();
         private int _result;
-
+        private SQLiteConnection m_dbConnection;
         public Generator()
         {
+            //Create the database connection and open the connection
+            m_dbConnection = new SQLiteConnection("Data Source=mathcarbo.sqlite;");
+            m_dbConnection.Open();
+            //Create the table for the generator if it does not exist
+            string sql = "CREATE TABLE generator (int1 int,int2 int,int3 int,int4 int,int5 int,result int);";
+            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            command.ExecuteNonQuery();
+
         }
         //Create a random list of ints with the first three between 1 and 12 and the last two between 1 and 24
         public List<int> RandomList()
@@ -121,9 +130,9 @@ namespace MathadorLib
         }
 
         //Write a string to the file
-        private void WriteListToFile(string input, string path)
+        private void WriteListToFile(string path)
         {
-            File.AppendAllLines(path, new List<string> { ToString(), input });
+            File.AppendAllLines(path, new List<string> { ToString() });
         }
 
         //Override the ToString method to get the desired output string
@@ -134,7 +143,7 @@ namespace MathadorLib
             {
                 str += Convert.ToString(item) + "-";
             }
-            str += "res : " +  _result;
+            str += _result;
             return str;
         }
 
@@ -161,7 +170,8 @@ namespace MathadorLib
                 //if the result is less than 100 write the list to the file
                 if (_result <= 100)
                 {
-                    WriteListToFile("", path);
+                    SaveToDB();
+                    WriteListToFile(path);
                 }
                 //else skip this list and loop one more time
                 else
@@ -169,6 +179,42 @@ namespace MathadorLib
                     i--;
                 }
             }
+        }
+
+        private void SaveToDB()
+        {
+            string sql = "INSERT INTO generator VALUES (" + _output[0] + "," + _output[1] + "," + _output[2] + "," +
+                         _output[3] + "," + _output[4] + "," + _result + ");";
+            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            command.ExecuteNonQuery();
+        }
+
+        public List<List<int>> ReadFromDB()
+        {
+            string sql = "SELECT * FROM generator";
+            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            SQLiteDataReader reader = command.ExecuteReader();
+            List<List<int>> container = new List<List<int>>();
+            while (reader.Read())
+            {
+                List<int> item = new List<int> { Convert.ToInt32(reader["int1"]), Convert.ToInt32(reader["int2"]), Convert.ToInt32(reader["int3"]), Convert.ToInt32(reader["int4"]), Convert.ToInt32(reader["int5"]), Convert.ToInt32(reader["result"]) };
+                container.Add(item);
+            }
+            return container;
+        }
+
+        public List<List<int>> ReadFromFile(string path)
+        {
+            List<List<int>> container = new List<List<int>>();
+            string[] allLines = File.ReadAllLines(path);
+            foreach (var line in allLines)
+            {
+                string[] splitLine = line.Split('-');
+                int[] ints = Array.ConvertAll(splitLine, int.Parse);
+                List<int> item = ints.ToList();
+                container.Add(item);
+            }
+            return container;
         }
     }
 

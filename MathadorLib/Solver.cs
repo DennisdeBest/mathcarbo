@@ -60,6 +60,11 @@ namespace MathadorLib
             File.AppendAllLines(path, new List<string> { ListToString(_bestResult.Item1), _bestResult.Item2, "Points : " + Convert.ToString(_bestResult.Item3), Environment.NewLine });
         }
 
+        public Solver()
+        {
+            
+        }
+
         //Return a list of all the possible outcomes from one operation cycle
         public List<Tuple<List<int>, string, int, int>> AllPossibleResultsOneCycle(Tuple<List<int>, string, int, int> tuple)
         {

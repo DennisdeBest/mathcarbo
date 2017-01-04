@@ -14,3 +14,11 @@ C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\Mathador.pdb
 C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\MathadorLib.dll
 C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\MathadorLib.pdb
 C:\VisualStudioProjects\mathcarbo\Mathador\obj\Debug\Mathador.csprojResolveAssemblyReference.cache
+C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\EntityFramework.dll
+C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\EntityFramework.SqlServer.dll
+C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\System.Data.SQLite.dll
+C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\System.Data.SQLite.EF6.dll
+C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\System.Data.SQLite.Linq.dll
+C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\EntityFramework.xml
+C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\EntityFramework.SqlServer.xml
+C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\System.Data.SQLite.xml

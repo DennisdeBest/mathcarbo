@@ -8,3 +8,5 @@ C:\VisualStudioProjects\mathcarbo\MathadorLib\bin\Debug\MathadorLib.pdb
 C:\VisualStudioProjects\mathcarbo\MathadorLib\obj\Debug\MathadorLib.csprojResolveAssemblyReference.cache
 C:\VisualStudioProjects\mathcarbo\MathadorLib\obj\Debug\MathadorLib.dll
 C:\VisualStudioProjects\mathcarbo\MathadorLib\obj\Debug\MathadorLib.pdb
+C:\VisualStudioProjects\mathcarbo\MathadorLib\bin\Debug\System.Data.SQLite.dll
+C:\VisualStudioProjects\mathcarbo\MathadorLib\bin\Debug\System.Data.SQLite.xml
