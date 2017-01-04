@@ -18,8 +18,8 @@ namespace Mathador
         }
         private static void Solve()
         {
-            List<int> list = new List<int> { 1, 7, 1, 16, 23 };
-            Solver solver = new Solver(list, 208);
+            List<int> list = new List<int> { 5, 11, 11, 15, 21 };
+            Solver solver = new Solver(list, 2536);
         }
 
         private static void Generate()
