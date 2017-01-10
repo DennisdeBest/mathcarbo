@@ -10,3 +10,5 @@ C:\VisualStudioProjects\mathcarbo\MathadorLib\obj\Debug\MathadorLib.dll
 C:\VisualStudioProjects\mathcarbo\MathadorLib\obj\Debug\MathadorLib.pdb
 C:\VisualStudioProjects\mathcarbo\MathadorLib\bin\Debug\System.Data.SQLite.dll
 C:\VisualStudioProjects\mathcarbo\MathadorLib\bin\Debug\System.Data.SQLite.xml
+C:\VisualStudioProjects\mathcarbo\MathadorLib\bin\Debug\WindowsInput.dll
+C:\VisualStudioProjects\mathcarbo\MathadorLib\bin\Debug\WindowsInput.xml
