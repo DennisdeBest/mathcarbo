@@ -68,7 +68,6 @@ namespace MathadorLib
             currentGameLastLine = linesPerGame;
             operations = new List<string> {"+", "-", "*", "/"};
             lineCount = 0;
-            this.gameData = gameData;
 
             //Write start message and options
             WriteLine("Bienvenue a mathCarbo \n Veullez saisir les opérations entre \n les chiffres de la liste pour arriver au résultat \n " +
@@ -163,11 +162,11 @@ namespace MathadorLib
             {
                 string list = Convert.ToString(Reader["list"]);
                 List<string> solverOutput = solver.solveFromString(list);
-                Console.WriteLine("Liste : " + splitListString(list));
+                Console.WriteLine("Liste : " + splitListString(list) + Environment.NewLine);
                 Console.WriteLine("Votre solution : ("+Reader["points"]+" points)");
                 Console.WriteLine(Convert.ToString(Reader["operations"]));
                 Console.WriteLine("La meilleure solution : ("+ solverOutput[1]+" points)");
-                Console.WriteLine(solverOutput[0] + Environment.NewLine);
+                Console.WriteLine(solverOutput[0] + Environment.NewLine + "--------------------" + Environment.NewLine);
             }
             WriteLine("\n<o> Rejouer \n<n> Quitter la partie");
             char rejouer = ReadKey(true).KeyChar;
