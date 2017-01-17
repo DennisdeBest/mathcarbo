@@ -17,20 +17,25 @@ namespace MathadorLib
         //List of lists obtained for each cycle
         private List<Tuple<List<int>, string, int, int>> _listOfTuples;
         private int _expectedRes;
-        public Solver(List<int> list, int res)
+
+        public Solver()
         {
-            _expectedRes = res;
-            List<Tuple<List<int>, string>> distinctResultList = new List<Tuple<List<int>, string>> { };
-            //Set path for saved Data
-            string path = @"C:\VisualStudioProjects\CoursDotNet\data\solver.txt";
-            File.WriteAllText(path, string.Empty);
+
+        }
+
+        public List<string> solveFromString(string input)
+        {
+            string[] explodedInput = input.Split('-');
+            List<int> explodedInputList = explodedInput.Select(int.Parse).ToList();
+            _expectedRes = explodedInputList[explodedInputList.Count - 1];
+            explodedInputList.RemoveAt(explodedInput.Length - 1);
 
             //initialise the tuples and variables
-            this._list = new Tuple<List<int>, string, int, int>(list, "", 0, 0);
+            this._list = new Tuple<List<int>, string, int, int>(explodedInputList, "", 0, 0);
 
             int listSize = this._list.Item1.Count;
             //Create Regex for result
-            string regStr = " " + Convert.ToString(res) + "$";
+            string regStr = " " + Convert.ToString(_expectedRes) + "$";
             var lastNumber = new Regex(@regStr);
 
             //Remove duplicates from the list of tuples
@@ -57,12 +62,9 @@ namespace MathadorLib
                 //Remove the duplicates before starting the next cycle
                 _listOfTuples = RemoveDuplicates(resultList);
             }
-            File.AppendAllLines(path, new List<string> { ListToString(_bestResult.Item1), _bestResult.Item2, "Points : " + Convert.ToString(_bestResult.Item3), Environment.NewLine });
-        }
+            return new List<string>() { _bestResult.Item2, Convert.ToString(_bestResult.Item3) };
+            //File.AppendAllLines(path, new List<string> { ListToString(_bestResult.Item1), _bestResult.Item2, "Points : " + Convert.ToString(_bestResult.Item3), Environment.NewLine });
 
-        public Solver()
-        {
-            
         }
 
         //Return a list of all the possible outcomes from one operation cycle

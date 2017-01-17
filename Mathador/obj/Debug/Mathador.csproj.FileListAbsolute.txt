@@ -22,5 +22,3 @@ C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\System.Data.SQLite.Linq.dll
 C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\EntityFramework.xml
 C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\EntityFramework.SqlServer.xml
 C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\System.Data.SQLite.xml
-C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\WindowsInput.dll
-C:\VisualStudioProjects\mathcarbo\Mathador\bin\Debug\WindowsInput.xml

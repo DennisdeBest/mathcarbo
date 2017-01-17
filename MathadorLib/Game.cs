@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,13 +24,8 @@ namespace MathadorLib
         //Console areas
         private int hCenterConsole;
         private int vCenterConsole;
-        private static int[] timeArea;
         private static int[] pointsArea;
         private static int[] gameInputArea;
-
-        //Timer and max time per line
-        private Timer timer;
-        private static int timeLeft = 30;
 
         //variables to keep track of game progression
         private int lineCount;
@@ -40,12 +36,18 @@ namespace MathadorLib
         private int currentGamePoints;
         private int currentLinePoints;
 
-        private static bool timeUp = false;
         //Database connection
         private SQLiteConnection m_dbConnection;
 
-        public Game(List<List<int>> gameData)
+        private Solver solver;
+        private Generator generator;
+        public Game()
         {
+            SQLiteConnection.CreateFile("mathcarbo.sqlite");
+
+            generator = new Generator();
+           
+            solver = new Solver();
             m_dbConnection = new SQLiteConnection("Data Source=mathcarbo.sqlite;");
             m_dbConnection.Open();
             //Create the table for the generator if it does not exist
@@ -57,7 +59,6 @@ namespace MathadorLib
             hCenterConsole = 40;
             vCenterConsole = 10;
             SetWindowSize(hCenterConsole*2, vCenterConsole*2);
-            timeArea = new[] {hCenterConsole*2 - 20, 0};
             pointsArea = new[] { hCenterConsole * 2 - 20, 1 };
             gameInputArea = new[] { 0, 2 };
 
@@ -78,7 +79,7 @@ namespace MathadorLib
             while (true)
             {
                 WriteLine("\n < j > jouer \n < h > highscores \n < q > quitter");
-                var input = ReadKey().KeyChar;
+                var input = ReadKey(true).KeyChar;
                 switch (input)
                 {
                     case 'j':
@@ -98,38 +99,6 @@ namespace MathadorLib
                 }
             }
         }
-
-        //Print the time to the corner of the screen every second and reset the cursor position
-    private static void TimerCallback(object o)
-    {
-        string timeString = "";
-        timeLeft--;
-        timeUp = false;
-      if (timeLeft == 0)
-            {
-                //If the time is up simulate input to skip this line
-                InputSimulator inputSimulator = new InputSimulator();
-                inputSimulator.Keyboard.KeyPress(VirtualKeyCode.RETURN, VirtualKeyCode.VK_Q, VirtualKeyCode.RETURN);
-                timeUp = true;
-                timeLeft = 30;
-            }
-        if (timeLeft < 10)
-        {
-            timeString = "0" + Convert.ToString(timeLeft);
-        }
-        else
-        {
-            timeString = Convert.ToString(timeLeft);
-        }
-            int[] oldCursorPosition = new[] { Console.CursorLeft, Console.CursorTop };
-            SetCursorPosition(timeArea[0], timeArea[1]);
-            // Display the date/time when this method got called.
-            WriteLine("Time left : " + timeString);
-            SetCursorPosition(oldCursorPosition[0], oldCursorPosition[1]);
-        // Force a garbage collection to occur for this demo.
-        GC.Collect();
-    }
-
         //Main gameloop
     private void gameLoop()
         {
@@ -137,38 +106,72 @@ namespace MathadorLib
             var rejouer = 'o';
             do
             {
-                while (lineCount < currentGameLastLine)
+                initGameTable();
+                generateNewList();
+                lineCount = 0;
+
+                while (lineCount < linesPerGame)
                 {
-                    //Set timer
-                    //timer = new Timer(TimerCallback, null, 0, 1000);
-                    //Reset time and console in between lists
-                    Console.Clear();
-                    timeLeft = 30;
+                    //Reset console in between lists
+
                     WritePointsToScreen();
                     getResult();
+                    var operationsString = "";
+                    var gameLineForDB = getLineForDB(gameData[lineCount]);
 
                     while ((currentResult != _expectedResult) && (currentResult != -1))
                     {
+                        Console.Clear();
                         WritePointsToScreen();
                         printLine(currentLine);
-                        getUserInput();
+                        var lastOperation = getUserInput();
+                        if (lastOperation != "")
+                        {
+                            operationsString += lastOperation;
+                        }
                     }
+                    saveLineToGameTable(gameLineForDB, operationsString, currentLinePoints);
                     lineCount++;
                     lastPlayInfo = "          ";
                     currentLinePoints = 0;
                     currentResult = 0;
                 }
-                timer.Dispose();
                 Console.Clear();
                 SaveGameToDB();
-                WriteLine("Vous avez obtenu "+currentGamePoints+ " points\nRejouer ? o/n");
-                rejouer = ReadKey().KeyChar;
+                WriteLine("Vous avez obtenu "+currentGamePoints+ " points\n<o> Rejouer \n<n> Quitter la partie\n<s> Voir la solution");
+                rejouer = ReadKey(true).KeyChar;
+                if (rejouer == 's')
+                {
+                    rejouer = solve();
+                }
                 currentGameLastLine += linesPerGame;
                 currentGamePoints = 0;
                 WriteLine("");
 
             } while (rejouer != 'n');
 
+        }
+
+        private char solve()
+        {
+            var sql = "SELECT * FROM game;";
+            var command = new SQLiteCommand(sql, m_dbConnection);
+            var Reader = command.ExecuteReader();
+            Console.Clear();
+            Console.WriteLine("***** Solutions *****");
+            while (Reader.Read())
+            {
+                string list = Convert.ToString(Reader["list"]);
+                List<string> solverOutput = solver.solveFromString(list);
+                Console.WriteLine("Liste : " + splitListString(list));
+                Console.WriteLine("Votre solution : ("+Reader["points"]+" points)");
+                Console.WriteLine(Convert.ToString(Reader["operations"]));
+                Console.WriteLine("La meilleure solution : ("+ solverOutput[1]+" points)");
+                Console.WriteLine(solverOutput[0] + Environment.NewLine);
+            }
+            WriteLine("\n<o> Rejouer \n<n> Quitter la partie");
+            char rejouer = ReadKey(true).KeyChar;
+            return rejouer;
         }
 
         //Save the highscores to the database
@@ -190,27 +193,20 @@ namespace MathadorLib
         }
         //Wait for user input, read "q" to quit else read the line and split it to get the operation wanted by the user
         //Print the result of the operation or an error message to the screen
-        private void getUserInput()
+        private string getUserInput()
         {
             Console.SetCursorPosition(0,0);
             Console.WriteLine(lastPlayInfo);
             var input = "";
+            var operation = "";
             Console.SetCursorPosition(gameInputArea[0], gameInputArea[1]);
-            try
-            {
-                input = Reader.ReadLine(5000);
-            }
-            catch (TimeoutException)
-            {
-                lastPlayInfo = "Time up";
-                currentResult = -1;
-                return;
-            }
+            input = Console.ReadLine();
             if (input == "q")
             {
+                operation = "Canceled";
                 currentResult = -1;
                 currentGamePoints -= currentLinePoints;
-                return;
+                return operation;
             }
             int a;
             int b;
@@ -222,7 +218,9 @@ namespace MathadorLib
                     if (c != -1)
                     {
                         lastPlayInfo = (a + " " +splitedInput[1] + " " + b + " = " + c +"\n");
+                        operation = lastPlayInfo;
                         currentResult = c;
+                        return operation;
                     }
                     else
                     {
@@ -233,6 +231,7 @@ namespace MathadorLib
             {
                 lastPlayInfo = "Not a valid line";
             }
+            return "";
         }
 
         //Get the result of an operation depending on the operation
@@ -240,6 +239,7 @@ namespace MathadorLib
         {
             int currentOperationPoints = 0;
             var c = -1;
+
             switch (currentOperation)
             {
                 case "+":
@@ -321,6 +321,61 @@ namespace MathadorLib
             str += " = " + _expectedResult;
             Console.SetCursorPosition(0,1);
             WriteLine(str);
+        }
+
+        private string getLineForDB(List<int> input)
+        {
+            var str = "";
+            for (var i = 0; i < input.Count; i++)
+                if (i == input.Count - 1)
+                    str += input[i];
+                else
+                    str += input[i] + "-"; ;
+
+            return str;
+        }
+
+        private string splitListString(string input)
+        {
+            string str = "";
+            string[] explodedString = input.Split('-');
+            for (var i = 0; i < explodedString.Length; i++)
+            {
+                if (i == explodedString.Length - 1)
+                    str += explodedString[i];
+                else if (i == explodedString.Length - 2)
+                    str += explodedString[i] + " = ";
+                else
+                    str += explodedString[i] + " - ";
+            }
+            return str;
+
+        }
+        //Save User gameplay
+        private void initGameTable()
+        {
+            var sql = "DROP TABLE IF EXISTS game;";
+            var command = new SQLiteCommand(sql, m_dbConnection);
+            command.ExecuteNonQuery();
+
+            sql = "CREATE TABLE game (list varchar(255), operations text, points int);";
+            command = new SQLiteCommand(sql, m_dbConnection);
+            command.ExecuteNonQuery();
+        }
+
+        private void saveLineToGameTable(string List, string operations, int points)
+        {
+            var sql = "INSERT INTO game VALUES ('" + List + "', '" + operations + "',"+ points +");";
+            var command = new SQLiteCommand(sql, m_dbConnection);
+            command.ExecuteNonQuery();
+        }
+
+        private void generateNewList()
+        {
+            string path = "generator.txt";
+            generator.GenerateRandomLists(10, path);
+            //return generator.ReadFromDB();
+            gameData =  generator.ReadFromFile(path);
         }
     }
 }
