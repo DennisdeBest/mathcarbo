@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using WindowsInput;
-using WindowsInput.Native;
+
 using static System.Console;
 
 namespace MathadorLib
@@ -46,7 +40,7 @@ namespace MathadorLib
             SQLiteConnection.CreateFile("mathcarbo.sqlite");
 
             generator = new Generator();
-           
+
             solver = new Solver();
             m_dbConnection = new SQLiteConnection("Data Source=mathcarbo.sqlite;");
             m_dbConnection.Open();
@@ -150,7 +144,7 @@ namespace MathadorLib
             } while (rejouer != 'n');
 
         }
-
+        //Run the solver on all combinations played by the user and display the result on screen
         private char solve()
         {
             var sql = "SELECT * FROM game;";
@@ -202,9 +196,10 @@ namespace MathadorLib
             input = Console.ReadLine();
             if (input == "q")
             {
-                operation = "Canceled";
+                operation = "Canceled" + Environment.NewLine;
                 currentResult = -1;
                 currentGamePoints -= currentLinePoints;
+                currentLinePoints = 0;
                 return operation;
             }
             int a;
