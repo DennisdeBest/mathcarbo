@@ -14,11 +14,6 @@ namespace MathadorLib
         readonly SQLiteConnection _mDbConnection;
         public Generator()
         {
-            if (!File.Exists("mathcarbo.sqlite"))
-            {
-                SQLiteConnection.CreateFile("mathcarbo.sqlite");
-            }
-
             //Create the database connection and open the connection
             _mDbConnection = new SQLiteConnection("Data Source=mathcarbo.sqlite; Version=3;");
             _mDbConnection.Open();
@@ -34,11 +29,11 @@ namespace MathadorLib
             _output = new List<int>();
             for (int i = 0; i < 3; i++)
             {
-                _output.Add(_random.Next(1,4));
+                _output.Add(_random.Next(1,13));
             }
             for (int i = 0; i < 2; i++)
             {
-                _output.Add(_random.Next(1, 5));
+                _output.Add(_random.Next(1, 25));
             }
 
             return _output;

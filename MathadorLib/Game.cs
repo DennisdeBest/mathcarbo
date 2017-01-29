@@ -141,16 +141,21 @@ namespace MathadorLib
                             }
                         }
                         //Reset line points and move on to the next line if the result was not found and only one number is left
-                        if (_currentLine.Count == 1)
+                        else
                         {
-                            resetLinePoints();
-                            validate = 'n';
+                            if (_currentLine.Count == 1)
+                            {
+                                ResetLinePoints();
+                                validate = 'n';
+                            }
                         }
+                       
                     }
                     //Check if mathador
                     if (_currentLineOperations.Length == 4)
                     {
                         _currentLinePoints += 5;
+                        _currentGamePoints += 5;
                         operationsString += "Mathador !!" + Environment.NewLine;
                     }
                     SaveLineToGameTable(gameLineForDb, operationsString, _currentLinePoints);
@@ -208,15 +213,19 @@ namespace MathadorLib
         {
             Console.Clear();
             Console.WriteLine("***** Highscores *****" + Environment.NewLine);
-            var sql = "SELECT * FROM highscores ORDER BY points;";
+            var sql = "SELECT * FROM highscores ORDER BY points DESC LIMIT 9;";
             var command = new SQLiteCommand(sql, _mDbConnection);
             var reader = command.ExecuteReader();
+            var counter = 1;
             while (reader.Read())
-                WriteLine(reader["username"] + " -- " + reader["points"]);
+            {
+                WriteLine(Convert.ToString(counter) + ". " + reader["username"] + " -- " + reader["points"]);
+                counter++;
+            }
         }
 
         //Reset all points for current line if expected result was not found or line was abandonned
-        private void resetLinePoints()
+        private void ResetLinePoints()
         {
             _currentResult = -1;
             _currentGamePoints -= _currentLinePoints;
@@ -236,7 +245,7 @@ namespace MathadorLib
             if (input == "q")
             {
                 operation = "Cancelled" + Environment.NewLine;
-                resetLinePoints();
+                ResetLinePoints();
                 return operation;
             }
             int a;
@@ -364,6 +373,7 @@ namespace MathadorLib
             WriteLine(str);
         }
 
+        //Create a string from the current played line for the database
         private string getLineForDB(List<int> input)
         {
             var str = "";
@@ -376,6 +386,7 @@ namespace MathadorLib
             return str;
         }
 
+        //From a database string create a human readable string
         private string splitListString(string input)
         {
             var str = "";
@@ -409,6 +420,7 @@ namespace MathadorLib
             command.ExecuteNonQuery();
         }
 
+        //Generate a new list of 10 lines saved to file
         private void GenerateNewList()
         {
             var path = "generator.txt";

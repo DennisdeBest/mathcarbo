@@ -7,31 +7,35 @@ namespace MathadorLib
 {
     public class Solver
     {
+        //Save onyl the best result
         private Tuple<List<int>, string, int, int> _bestResult = new Tuple<List<int>, string, int, int>(
             new List<int>(), "", 0, 0);
 
         private int _expectedRes;
         private Tuple<List<int>, string, int, int> _list;
-        //Path for Data File
-        //List of lists obtained for each cycle
+        //List of tuples obtained for each cycle
         private List<Tuple<List<int>, string, int, int>> _listOfTuples;
+        private bool _mathadorFound;
 
+
+        //Solve from - separted string
         public List<string> SolveFromString(string input)
         {
+            //The last number is the expected tesult, the others are the list of numbers to get there
             var explodedInput = input.Split('-');
             var explodedInputList = explodedInput.Select(int.Parse).ToList();
             _expectedRes = explodedInputList[explodedInputList.Count - 1];
             explodedInputList.RemoveAt(explodedInput.Length - 1);
+            _mathadorFound = false;
 
             //initialise the tuples and variables
             _list = new Tuple<List<int>, string, int, int>(explodedInputList, "", 0, 0);
 
+            //Get the amount of numbers available to determine the amount of solving iterations need to be performed
+            //around 1sec for 4 numbers, 8secs for 5 and over a minute for 6
             var listSize = _list.Item1.Count;
-            //Create Regex for result
-            var regStr = " " + Convert.ToString(_expectedRes) + "$";
-            var lastNumber = new Regex(regStr);
 
-            //Remove duplicates from the list of tuples
+            //Perform first iteration and remove duplicates from the list of tuples
             _listOfTuples = RemoveDuplicates(AllPossibleResultsOneCycle(_list));
 
             //There are 4 cycles of operations so we loop 3 times (first cycle is already done above)
@@ -42,22 +46,27 @@ namespace MathadorLib
 
                 //Get a list From the list of lists returned by the last cycle
                 foreach (var element in _listOfTuples)
-                    foreach (var cycleResultList in AllPossibleResultsOneCycle(element))
-                        resultList.Add(cycleResultList);
+                {
+                    if (!_mathadorFound)
+                    {
+                        foreach (var cycleResultList in AllPossibleResultsOneCycle(element))
+                        {
+                            resultList.Add(cycleResultList);
+                        }
+                    }  
+                }
+
                 //Remove the duplicates before starting the next cycle
                 _listOfTuples = RemoveDuplicates(resultList);
             }
             return new List<string> {_bestResult.Item2, Convert.ToString(_bestResult.Item3)};
-            //File.AppendAllLines(path, new List<string> { ListToString(_bestResult.Item1), _bestResult.Item2, "Points : " + Convert.ToString(_bestResult.Item3), Environment.NewLine });
         }
 
         //Return a list of all the possible outcomes from one operation cycle
         public List<Tuple<List<int>, string, int, int>> AllPossibleResultsOneCycle(
             Tuple<List<int>, string, int, int> tuple)
         {
-            //Operations.Add(Environment.NewLine + listToString(list));
             var resultList = new List<Tuple<List<int>, string, int, int>>();
-
 
             for (var i = 0; i < tuple.Item1.Count; i++)
                 for (var j = 0; j < tuple.Item1.Count; j++)
@@ -107,13 +116,16 @@ namespace MathadorLib
         }
 
         //Create a new list from the old one without the two values used to calculate the result but with the result
+        //Tuples can't be modified so a list is created from the tuple and then a new tuple is returned
         private void CreateAndAddNewList(int i, int j, int res, string symbol, Tuple<List<int>, string, int, int> tuple,
             List<Tuple<List<int>, string, int, int>> resultTuple)
         {
             var listClone = new List<int>(tuple.Item1);
             var resultString = "";
             if (tuple.Item2 != "")
+            {
                 resultString += Environment.NewLine;
+            }
             resultString += CreateOperationString(listClone[i], listClone[j], symbol, res);
 
             listClone.RemoveAt(i);
@@ -141,6 +153,7 @@ namespace MathadorLib
             var outputTuple = new Tuple<List<int>, string, int, int>(listClone, tuple.Item2 + resultString, points, 0);
             if ((res == _expectedRes) && (outputTuple.Item3 > _bestResult.Item3))
                 _bestResult = outputTuple;
+
             //If the output tuple uses all operations set it as the best solution
             if ((res == _expectedRes) && isMathador(outputTuple))
             {
@@ -158,7 +171,10 @@ namespace MathadorLib
             {
                 var operations = new List<string> {"x", "-", "/", "+"};
                 if (operations.All(s => input.Item2.Contains(s)))
+                {
+                    _mathadorFound = true;
                     return true;
+                }
             }
             return false;
         }
