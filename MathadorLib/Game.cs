@@ -68,12 +68,12 @@ namespace MathadorLib
             WriteLine(
                 "Bienvenue a mathCarbo \n Veullez saisir les opérations entre \n les chiffres de la liste pour arriver au résultat \n " +
                 "Il faut entrer les opérations sous la forme suivante :\n <nombre><espace><operation><espace><nombre> ex : 8 * 9 \n" +
-                "pour abandonner la liste en cours entrez <q> \n");
+                "pour abandonner la ligne en cours entrez <q> \n");
 
             //Start of the main menu loop
             while (true)
             {
-                WriteLine("\n < j > jouer \n < h > highscores \n < q > quitter");
+                WriteLine("\n <j> jouer \n <h> highscores \n <q> quitter");
                 var input = ReadKey(true).KeyChar;
                 switch (input)
                 {
@@ -134,7 +134,7 @@ namespace MathadorLib
                             {
                                 validate = 'n';
                             }
-                            else
+                            else if (lastOperation != "")
                             {
                                 Console.WriteLine("Bonne réponse, faire d'autres opérations ? (o/n)");
                                 validate = Console.ReadKey(true).KeyChar;
@@ -166,11 +166,14 @@ namespace MathadorLib
                 }
                 Clear();
                 SaveGameToDb();
-                WriteLine("Vous avez obtenu " + _currentGamePoints +
-                          " points\n<o> Rejouer \n<n> Quitter la partie\n<s> Voir la solution");
-                rejouer = ReadKey(true).KeyChar;
+                    WriteLine("Vous avez obtenu " + _currentGamePoints +
+                         " points\n <o> Rejouer \n <n> Quitter la partie\n <s> Voir la solution");
+                    rejouer = ReadKey(true).KeyChar;
+               
                 if (rejouer == 's')
+                {
                     rejouer = Solve();
+                }   
                 _currentGameLastLine += _linesPerGame;
                 _currentGamePoints = 0;
                 WriteLine("");
@@ -195,8 +198,12 @@ namespace MathadorLib
                 WriteLine("La meilleure solution : (" + solverOutput[1] + " points)");
                 WriteLine(solverOutput[0] + Environment.NewLine + "--------------------" + Environment.NewLine);
             }
-            WriteLine("\n<o> Rejouer \n<n> Quitter la partie");
-            var rejouer = ReadKey(true).KeyChar;
+            var rejouer = ' ';
+            while (!(rejouer != 'o' ^ rejouer != 'n'))
+            {
+                WriteLine("\n <o> Rejouer \n <n> Quitter la partie");
+                rejouer = ReadKey(true).KeyChar;
+            }
             return rejouer;
         }
 

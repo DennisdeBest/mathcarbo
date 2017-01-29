@@ -11,17 +11,8 @@ namespace MathadorLib
         readonly Random _random = new Random();
         private List<int> _output = new List<int>();
         private int _result;
-        readonly SQLiteConnection _mDbConnection;
         public Generator()
         {
-            //Create the database connection and open the connection
-            _mDbConnection = new SQLiteConnection("Data Source=mathcarbo.sqlite; Version=3;");
-            _mDbConnection.Open();
-            //Create the table for the generator if it does not exist
-            string sql = "CREATE TABLE IF NOT EXISTS generator (int1 int,int2 int,int3 int,int4 int,int5 int,result int);";
-            SQLiteCommand command = new SQLiteCommand(sql, _mDbConnection);
-            command.ExecuteNonQuery();
-
         }
         //Create a random list of ints with the first three between 1 and 12 and the last two between 1 and 24
         public List<int> RandomList()
@@ -166,7 +157,6 @@ namespace MathadorLib
                 //if the result is less than 100 write the list to the file
                 if (_result <= 100)
                 {
-                    SaveToDb();
                     WriteListToFile(path);
                 }
                 //else skip this list and loop one more time
@@ -175,28 +165,6 @@ namespace MathadorLib
                     i--;
                 }
             }
-        }
-
-        private void SaveToDb()
-        {
-            string sql = "INSERT INTO generator VALUES (" + _output[0] + "," + _output[1] + "," + _output[2] + "," +
-                         _output[3] + "," + _output[4] + "," + _result + ");";
-            SQLiteCommand command = new SQLiteCommand(sql, _mDbConnection);
-            command.ExecuteNonQuery();
-        }
-
-        public List<List<int>> ReadFromDb()
-        {
-            string sql = "SELECT * FROM generator";
-            SQLiteCommand command = new SQLiteCommand(sql, _mDbConnection);
-            SQLiteDataReader reader = command.ExecuteReader();
-            List<List<int>> container = new List<List<int>>();
-            while (reader.Read())
-            {
-                List<int> item = new List<int> { Convert.ToInt32(reader["int1"]), Convert.ToInt32(reader["int2"]), Convert.ToInt32(reader["int3"]), Convert.ToInt32(reader["int4"]), Convert.ToInt32(reader["int5"]), Convert.ToInt32(reader["result"]) };
-                container.Add(item);
-            }
-            return container;
         }
 
         public List<List<int>> ReadFromFile(string path)
@@ -213,6 +181,4 @@ namespace MathadorLib
             return container;
         }
     }
-
-
 }
