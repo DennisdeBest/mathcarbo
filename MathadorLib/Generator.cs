@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace MathadorLib
 {
@@ -15,15 +11,20 @@ namespace MathadorLib
         readonly Random _random = new Random();
         private List<int> _output = new List<int>();
         private int _result;
-        private SQLiteConnection m_dbConnection;
+        readonly SQLiteConnection _mDbConnection;
         public Generator()
         {
+            if (!File.Exists("mathcarbo.sqlite"))
+            {
+                SQLiteConnection.CreateFile("mathcarbo.sqlite");
+            }
+
             //Create the database connection and open the connection
-            m_dbConnection = new SQLiteConnection("Data Source=mathcarbo.sqlite;");
-            m_dbConnection.Open();
+            _mDbConnection = new SQLiteConnection("Data Source=mathcarbo.sqlite; Version=3;");
+            _mDbConnection.Open();
             //Create the table for the generator if it does not exist
-            string sql = "CREATE TABLE generator (int1 int,int2 int,int3 int,int4 int,int5 int,result int);";
-            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            string sql = "CREATE TABLE IF NOT EXISTS generator (int1 int,int2 int,int3 int,int4 int,int5 int,result int);";
+            SQLiteCommand command = new SQLiteCommand(sql, _mDbConnection);
             command.ExecuteNonQuery();
 
         }
@@ -33,11 +34,11 @@ namespace MathadorLib
             _output = new List<int>();
             for (int i = 0; i < 3; i++)
             {
-                _output.Add(_random.Next(1,13));
+                _output.Add(_random.Next(1,4));
             }
             for (int i = 0; i < 2; i++)
             {
-                _output.Add(_random.Next(1, 25));
+                _output.Add(_random.Next(1, 5));
             }
 
             return _output;
@@ -126,7 +127,7 @@ namespace MathadorLib
             int b = inputList[index];
             inputList.RemoveAt(index);
             //return the two ints we obtained
-            return new int[] {a,b};
+            return new[] {a,b};
         }
 
         //Write a string to the file
@@ -170,7 +171,7 @@ namespace MathadorLib
                 //if the result is less than 100 write the list to the file
                 if (_result <= 100)
                 {
-                    SaveToDB();
+                    SaveToDb();
                     WriteListToFile(path);
                 }
                 //else skip this list and loop one more time
@@ -181,18 +182,18 @@ namespace MathadorLib
             }
         }
 
-        private void SaveToDB()
+        private void SaveToDb()
         {
             string sql = "INSERT INTO generator VALUES (" + _output[0] + "," + _output[1] + "," + _output[2] + "," +
                          _output[3] + "," + _output[4] + "," + _result + ");";
-            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            SQLiteCommand command = new SQLiteCommand(sql, _mDbConnection);
             command.ExecuteNonQuery();
         }
 
-        public List<List<int>> ReadFromDB()
+        public List<List<int>> ReadFromDb()
         {
             string sql = "SELECT * FROM generator";
-            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            SQLiteCommand command = new SQLiteCommand(sql, _mDbConnection);
             SQLiteDataReader reader = command.ExecuteReader();
             List<List<int>> container = new List<List<int>>();
             while (reader.Read())

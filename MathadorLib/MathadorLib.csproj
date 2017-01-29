@@ -52,7 +52,6 @@
   <ItemGroup>
     <Compile Include="Game.cs" />
     <Compile Include="Generator.cs" />
-    <Compile Include="Reader.cs" />
     <Compile Include="Solver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
